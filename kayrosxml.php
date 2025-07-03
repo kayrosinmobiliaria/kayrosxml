@@ -49,9 +49,9 @@ function kayrosxml_deactivate_plugin(){
 //Registro de intervalos 
 add_filter( 'cron_schedules', 'kayrosxml_custom_schedule');
 function kayrosxml_custom_schedule( $schedules ) {
-     $schedules['five_seconds'] = array(
-        'interval' => 5,
-        'display' =>__('5 seconds','kayrosxml_lang_domain')
+     $schedules['twenty_four'] = array(
+        'interval' => 86400,
+        'display' =>__('24 hours','kayrosxml_lang_domain')
      );
      $schedules['six_hours'] = array(
         'interval' => 21600,
