@@ -50,12 +50,12 @@ function kayrosxml_deactivate_plugin(){
 add_filter( 'cron_schedules', 'kayrosxml_custom_schedule');
 function kayrosxml_custom_schedule( $schedules ) {
      $schedules['five_seconds'] = array(
-        'interval' => 5,
-        'display' =>__('5 seconds','kayrosxml_lang_domain')
+        'interval' => 24,
+        'display' =>__('24 hours','kayrosxml_lang_domain')
      );
      $schedules['six_hours'] = array(
-        'interval' => 21600,
-        'display' =>__('6 hours','kayrosxml_lang_domain')
+        'interval' => 86400,
+        'display' =>__('24 hours','kayrosxml_lang_domain')
      );
      return $schedules;
 }
@@ -331,113 +331,4 @@ function kayrosxml_form_generatexml_callback(){
       }
     }
   
-}
-
-
-
-
-function kayrosxml_options_page_html() {
-  
-  
-  if ( ! current_user_can( 'manage_options' ) ) {
-    return;
-  }
-
-  if ( isset( $_GET['settings-updated'] ) && $_GET['settings-updated'] == 'true' ) {
-    do_action('kayrosxml_update_cron_task');
-  }
-  
-  
-  //echo '<xmp>'.kayrosxml_generate_xml_data().'</xmp>';
-  
-
-
-  $default_tab = null;
-  $tab = isset($_GET['tab']) ? $_GET['tab'] : $default_tab;
-  $files = scandir(plugin_dir_path(__FILE__).'files/',1);
-  $limit = 30;
-  
-        
-    ?>
-    <div class="wrap">
-      <h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
-      
-      <nav class="nav-tab-wrapper">
-        <a href="?page=kayrosxml" class="nav-tab <?php if($tab===null):?>nav-tab-active<?php endif; ?>">Activar/Desactivar</a>
-        <a href="?page=kayrosxml&tab=historico" class="nav-tab <?php if($tab == 'historico'):?>nav-tab-active<?php endif; ?>">Histórico</a>
-        <a href="?page=kayrosxml&tab=actual" class="nav-tab <?php if($tab == 'actual'):?>nav-tab-active<?php endif; ?>">Actual</a>
-      </nav>
-      
-      <div class="tab-content">
-      <?php switch($tab) :
-        case 'actual':
-          ?>
-          <br> 
-          <p>
-              El archivo actual se encuentra en <a href="<?php echo plugin_dir_url(__FILE__).'kayros_propit_current.xml' ?>"><?php echo plugin_dir_url(__FILE__).'kayros_propit_current.xml' ?></a>
-          </p>
-          <form action="" method="post" name="kayrosxml_generate_xml_form">
-                  <input type="hidden" name="kayrosxml_generate_action" value="1">
-                  
-                <?php  submit_button( __( 'Generar XML', 'kayrosxml_update_xml' ) ); ?>
-              </form>
-          <?php
-          break;
-        case 'historico':
-          ?>
-          <table class="widefat fixed" cellspacing="0">
-              <thead>
-                  <th class="manage-column column-columnname">#</th>
-                  <th class="manage-column column-columnname">Nombre de archivo</th>
-                  <th class="manage-column column-columnname">Fecha</th>
-              </thead>
-              <tbody>
-          <?php
-              
-              if(count($files) > 2){
-                foreach($files as $key => $f){
-                  if($f != '.' && $f != '..' && $limit > 0){
-          ?>
-                  <tr>
-                      <td><?php echo $key+1 ?></td>
-                      <td><?php echo '<a href="'.plugin_dir_url(__FILE__).'files/'.$f.'" target="_blank">'.$f.'</a>' ?></td>
-                      <td><?php echo date ("F d Y H:i:s.", filemtime(plugin_dir_path(__FILE__).'files/'.$f)) ?></td>
-                  </tr>
-          <?php
-                    $limit--;
-                  } 
-                }
-              } else{
-                ?>
-                  <tr>
-                      <td colspan="3">No hay archivos generados.</td>
-                  </tr>
-                <?php
-              }
-          ?>
-              </tbody>            
-          </table>
-         <?php          
-          break;
-        default:
-          ?>
-        <form action="options.php" method="post">
-          <?php
-          // output security fields for the registered setting "kayrosxml_options"
-          settings_fields( 'kayrosxml' );
-          // output setting sections and their fields
-          // (sections are registered for "kayrosxml", each field is registered to a specific section)
-          do_settings_sections( 'kayrosxml' );
-          // output save settings button
-          submit_button( __( 'Guardar', 'textdomain' ) );
-          ?>
-      </form>
-            <?php
-     //       echo '<pre>'; print_r( _get_cron_array() ); echo '</pre>';
-          break;
-      endswitch; ?>
-      </div>
-      
-    </div>
-    <?php
 }
